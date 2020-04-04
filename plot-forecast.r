@@ -13,6 +13,7 @@ library(ggpubr)
 library(bayesplot)
 library(cowplot)
 
+Dias<-9 #dias para forecast
 source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
 make_forecast_plot <- function(){
@@ -24,10 +25,10 @@ make_forecast_plot <- function(){
   
   data_interventions <- read.csv("data/interventions.csv", 
                                  stringsAsFactors = FALSE)
-  
-  for(i in 1:11){
+  data_forecast<-data.frame()
+  for(i in 1:length(countries)){
     N <- length(dates[[i]])
-    N2 <- N + 7
+    N2 <- N + Dias
     country <- countries[[i]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
@@ -39,6 +40,7 @@ make_forecast_plot <- function(){
     estimated_deaths_ui <- colQuantiles(estimated.deaths[,1:N,i], probs=.975)
     
     estimated_deaths_forecast <- colMeans(estimated.deaths[,1:N2,i])[N:N2]
+    print(estimated_deaths_forecast)
     estimated_deaths_li_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.025)[N:N2]
     estimated_deaths_ui_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.975)[N:N2]
     
@@ -70,9 +72,9 @@ make_forecast_plot <- function(){
                                "rt_max" = rt_ui)
     
     times <- as_date(as.character(dates[[i]]))
-    times_forecast <- times[length(times)] + 0:7
+    times_forecast <- times[length(times)] + 0:Dias
     data_country_forecast <- data.frame("time" = times_forecast,
-                                        "country" = rep(country, 8),
+                                        "country" = rep(country,Dias+1),
                                         "estimated_deaths_forecast" = estimated_deaths_forecast,
                                         "death_min_forecast" = estimated_deaths_li_forecast,
                                         "death_max_forecast"= estimated_deaths_ui_forecast)
@@ -81,8 +83,9 @@ make_forecast_plot <- function(){
                      data_country_forecast = data_country_forecast,
                      filename = filename,
                      country = country)
-    
+    data_forecast<-rbind(data_forecast,data_country_forecast)
   }
+  write.csv(data_forecast,"figures/death_forecast.csv")
 }
 
 make_single_plot <- function(data_country, data_country_forecast, filename, country){
