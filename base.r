@@ -1,11 +1,12 @@
 library(rstan)
 library(data.table)
 library(lubridate)
+perl <- "D:/strawberry/perl/bin/perl.exe" #apontar para o perl interperter (http://strawberryperl.com/)
 library(gdata)
 library(EnvStats)
 
 countries <- c(
-  "Denmark",
+  "Portugal",
   "Italy",
   "Germany",
   "Spain",
@@ -28,6 +29,13 @@ print(sprintf("Running %s",StanModel))
 
 ## Reading all data
 d=readRDS('data/COVID-19-up-to-date.rds')
+
+## acrescenta dados extra para PT
+d_pt<-read.csv("data/extra_data_PT.csv")
+d_pt$t<-lubridate::decimal_date(as.Date(d_pt$ï..dateRep, format = "%d/%m/%Y"))
+names(d_pt)<-names(d)
+d<-rbind(d,d_pt)
+d <- d[order(d$Countries.and.territories, d$t, decreasing = FALSE), ] 
 
 ## get IFR
 ifr.by.country = read.csv("data/weighted_fatality.csv")
