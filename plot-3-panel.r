@@ -25,7 +25,7 @@ make_three_pannel_plot <- function(){
   data_interventions <- read.csv("data/interventions.csv", 
                                  stringsAsFactors = FALSE)
   covariates <- data_interventions[1:11, c(1,2,3,4,5,6, 7, 8)]
-  
+  data_summary<-data.frame()
   for(i in 1:11){
     print(i)
     N <- length(dates[[i]])
@@ -108,8 +108,10 @@ make_three_pannel_plot <- function(){
                covariates_country_long = covariates_country_long,
                filename2 = filename2,
                country = country)
-    
+                 # print(data_country)
+                data_summary<-rbind(data_summary,data_country)
   }
+  write.csv(data_summary,"figures/data_summary.csv")
 }
 
 #---------------------------------------------------------------------------
