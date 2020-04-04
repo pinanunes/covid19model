@@ -35,7 +35,7 @@ d_pt<-read.csv("data/extra_data_PT.csv")
 d_pt$t<-lubridate::decimal_date(as.Date(d_pt$ï..dateRep, format = "%d/%m/%Y"))
 names(d_pt)<-names(d)
 d<-rbind(d,d_pt)
-d <- d[order(d$Countries.and.territories, d$t, decreasing = FALSE), ] 
+d <- d[order(d$Countries, d$t, decreasing = FALSE), ] 
 
 ## get IFR
 ifr.by.country = read.csv("data/weighted_fatality.csv")
@@ -59,7 +59,8 @@ forecast = 0
 
 DEBUG = FALSE
 if(DEBUG == FALSE) {
-  N2 = 75 # Increase this for a further forecast
+  N2 = 90 # Increase this for a further forecast (tem que se aumentar à medida que se tem dados novos)
+  countries=c("Portugal","Spain","Sweden") #Comentar para fazer para todos os países
 }  else  {
   ### For faster runs:
   # countries = c("Austria","Belgium") #,Spain")
